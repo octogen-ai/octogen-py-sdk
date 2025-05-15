@@ -1,0 +1,21 @@
+{
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        },
+    },
+    "python.analysis.include": [
+        "src/**/*.py",
+    ],
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "mypy-type-checker.reportingScope": "workspace",
+    "mypy-type-checker.args": [
+        "--explicit-package-bases",
+        "--config-file",
+        "${workspaceFolder}/pyproject.toml"
+    ],
+    "mypy-type-checker.preferDaemon": false,
+}

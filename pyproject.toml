@@ -1,0 +1,32 @@
+[project]
+name = "octogen-py-sdk"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jsonpatch>=1.33",
+    "langchain>=0.3.25",
+    "langgraph>=0.4.3",
+    "mypy>=1.15.0",
+    "octogen-api==0.1.0a4",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+    "python-dotenv>=1.1.0",
+    "ruff>=0.11.10",
+    "structlog>=25.3.0",
+]
+
+[tool.mypy]
+disallow_untyped_defs = true
+show_error_codes = true
+no_implicit_optional = true
+warn_return_any = true
+warn_unused_ignores = true
+mypy_path = "src"
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["octogen"]
