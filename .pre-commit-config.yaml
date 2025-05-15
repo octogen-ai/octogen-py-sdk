@@ -1,0 +1,46 @@
+ci:
+  skip:
+    - run-lint-sh
+    - uv-lock
+  autofix_prs: false
+repos:
+  - repo: local
+    hooks:
+      - id: run-lint-sh
+        name: Run lint.sh
+        entry: tests/lint.sh
+        language: system
+        types: [python]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: "^prod/k8s.*$"
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+        types_or:
+          - python
+          - pyi
+        files: '^(.*\.py)$'
+      - id: ruff-format
+        types_or:
+          - python
+          - pyi
+        files: '^(.*\.py)$'
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.7.3
+    hooks:
+      - id: uv-lock
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.24.1
+    hooks:
+      - id: validate-pyproject
+        files: "^pyproject\\.toml$"
