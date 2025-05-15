@@ -93,5 +93,3 @@ async def create_discovery_agent(
             )
 
             yield agent
-
-            await session.close()

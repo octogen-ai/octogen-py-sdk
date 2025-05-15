@@ -165,5 +165,3 @@ async def create_comparison_agent(
             )
 
             yield agent
-
-            await session.close()

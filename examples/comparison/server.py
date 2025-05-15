@@ -72,7 +72,7 @@ async def comparison(request: ChatRequest) -> HydratedComparisonResponse:
         logger.info(f"Received comparison request: {request.message}")
 
         # Make sure the agent is initialized
-        if _stylist_agent is None:
+        if _comparison_agent is None:
             raise HTTPException(
                 status_code=500, detail="Comparison agent not initialized"
             )
@@ -85,7 +85,7 @@ async def comparison(request: ChatRequest) -> HydratedComparisonResponse:
         )
 
         # Process the message with the agent
-        agent_response = await _stylist_agent.run(request.message, config)
+        agent_response = await _comparison_agent.run(request.message, config)
         try:
             response = HydratedComparisonResponse.model_validate_json(agent_response)
         except Exception as e:
