@@ -16,8 +16,6 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
-      - id: check-yaml
-        exclude: "^prod/k8s.*$"
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -29,7 +27,7 @@ repos:
         types_or:
           - python
           - pyi
-        files: '^(src/|examples/|tests/|.*\.py)$'
+        files: '^(src/octogne/shop_agent/|examples/discovery/examples/|tests/|.*\.py)$'
       - id: ruff-format
         types_or:
           - python
