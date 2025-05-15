@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+comparison.egg-info/PKG-INFO
+comparison.egg-info/SOURCES.txt
+comparison.egg-info/dependency_links.txt
+comparison.egg-info/requires.txt
+comparison.egg-info/top_level.txt
+showcase/__init__.py
+showcase/agent.py
+showcase/schema.py
