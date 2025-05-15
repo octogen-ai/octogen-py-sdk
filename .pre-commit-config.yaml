@@ -29,12 +29,12 @@ repos:
         types_or:
           - python
           - pyi
-        files: '^(.*\.py)$'
+        files: '^(src/|examples/|tests/|.*\.py)$'
       - id: ruff-format
         types_or:
           - python
           - pyi
-        files: '^(.*\.py)$'
+        files: '^(src/|examples/|tests/|.*\.py)$'
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.7.3
     hooks:
