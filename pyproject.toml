@@ -21,6 +21,12 @@ dependencies = [
     "ruff>=0.11.10",
     "structlog>=25.3.0",
 ]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://octogen.ai"
+Issues = "https://github.com/octogen-systems/octogen-py-sdk/issues"
 
 [build-system]
 requires = ["hatchling"]
