@@ -139,7 +139,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "langgraph" },
     { name = "octogen-api" },
-    { name = "octogen-py-sdk" },
+    { name = "octogen-sdk-langgraph" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "ruff" },
@@ -155,7 +155,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=0.3.16" },
     { name = "langgraph", specifier = ">=0.4.3" },
     { name = "octogen-api", specifier = ">=0.1.0a4" },
-    { name = "octogen-py-sdk", editable = "../../" },
+    { name = "octogen-sdk-langgraph", editable = "../../" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "ruff", specifier = ">=0.11.10" },
@@ -695,7 +695,7 @@ wheels = [
 ]
 
 [[package]]
-name = "octogen-py-sdk"
+name = "octogen-sdk-langgraph"
 version = "0.1.0"
 source = { editable = "../../" }
 dependencies = [

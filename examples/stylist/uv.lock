@@ -128,41 +128,6 @@ wheels = [
 ]
 
 [[package]]
-name = "comparison"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "fastapi", extra = ["standard"] },
-    { name = "fastapi-cli" },
-    { name = "langchain" },
-    { name = "langchain-mcp-adapters" },
-    { name = "langchain-openai" },
-    { name = "langgraph" },
-    { name = "octogen-api" },
-    { name = "octogen-py-sdk" },
-    { name = "pydantic" },
-    { name = "python-dotenv" },
-    { name = "ruff" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
-    { name = "fastapi-cli", specifier = ">=0.0.7" },
-    { name = "langchain", specifier = ">=0.3.25" },
-    { name = "langchain-mcp-adapters", specifier = ">=0.0.11" },
-    { name = "langchain-openai", specifier = ">=0.3.16" },
-    { name = "langgraph", specifier = ">=0.4.3" },
-    { name = "octogen-api", specifier = ">=0.1.0a4" },
-    { name = "octogen-py-sdk", editable = "../../" },
-    { name = "pydantic", specifier = ">=2.11.4" },
-    { name = "python-dotenv", specifier = ">=1.1.0" },
-    { name = "ruff", specifier = ">=0.11.10" },
-    { name = "uvicorn", specifier = ">=0.34.2" },
-]
-
-[[package]]
 name = "distro"
 version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -695,7 +660,7 @@ wheels = [
 ]
 
 [[package]]
-name = "octogen-py-sdk"
+name = "octogen-sdk-langgraph"
 version = "0.1.0"
 source = { editable = "../../" }
 dependencies = [
@@ -727,7 +692,7 @@ requires-dist = [
 
 [[package]]
 name = "openai"
-version = "1.78.1"
+version = "1.79.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -739,9 +704,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a4/3f/4e5e7b0548a15eabc4a755c93cd5f9564887e3d2fd45b6ff531352e5859d/openai-1.78.1.tar.gz", hash = "sha256:8b26b364531b100df1b961d03560042e5f5be11301d7d49a6cd1a2b9af824dca", size = 442985 }
+sdist = { url = "https://files.pythonhosted.org/packages/52/cf/4901077dbbfd0d82a814d721600fa0c3a61a093d7f0bf84d0e4732448dc9/openai-1.79.0.tar.gz", hash = "sha256:e3b627aa82858d3e42d16616edc22aa9f7477ee5eb3e6819e9f44a961d899a4c", size = 444736 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3c/4c/3889bc332a6c743751eb78a4bada5761e50a8a847ff0e46c1bd23ce12362/openai-1.78.1-py3-none-any.whl", hash = "sha256:7368bf147ca499804cc408fe68cdb6866a060f38dec961bbc97b04f9d917907e", size = 680917 },
+    { url = "https://files.pythonhosted.org/packages/81/d2/e3992bb7c6641b765c1008e3c96e076e0b50381be2cce344e6ff177bad80/openai-1.79.0-py3-none-any.whl", hash = "sha256:d5050b92d5ef83f869cb8dcd0aca0b2291c3413412500eec40c66981b3966992", size = 683334 },
 ]
 
 [[package]]
@@ -1144,6 +1109,41 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ff/6a/b0b6d440e429d2267076c4819300d9929563b1da959cf1f68afbcd69fe45/structlog-25.3.0.tar.gz", hash = "sha256:8dab497e6f6ca962abad0c283c46744185e0c9ba900db52a423cb6db99f7abeb", size = 1367514 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f5/52/7a2c7a317b254af857464da3d60a0d3730c44f912f8c510c76a738a207fd/structlog-25.3.0-py3-none-any.whl", hash = "sha256:a341f5524004c158498c3127eecded091eb67d3a611e7a3093deca30db06e172", size = 68240 },
+]
+
+[[package]]
+name = "stylist"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "fastapi", extra = ["standard"] },
+    { name = "fastapi-cli" },
+    { name = "langchain" },
+    { name = "langchain-mcp-adapters" },
+    { name = "langchain-openai" },
+    { name = "langgraph" },
+    { name = "octogen-api" },
+    { name = "octogen-sdk-langgraph" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "ruff" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
+    { name = "fastapi-cli", specifier = ">=0.0.7" },
+    { name = "langchain", specifier = ">=0.3.25" },
+    { name = "langchain-mcp-adapters", specifier = ">=0.0.11" },
+    { name = "langchain-openai", specifier = ">=0.3.16" },
+    { name = "langgraph", specifier = ">=0.4.3" },
+    { name = "octogen-api", specifier = ">=0.1.0a4" },
+    { name = "octogen-sdk-langgraph", editable = "../../" },
+    { name = "pydantic", specifier = ">=2.11.4" },
+    { name = "python-dotenv", specifier = ">=1.1.0" },
+    { name = "ruff", specifier = ">=0.11.10" },
+    { name = "uvicorn", specifier = ">=0.34.2" },
 ]
 
 [[package]]

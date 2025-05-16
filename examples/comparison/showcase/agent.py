@@ -7,20 +7,15 @@ from typing import (
 )
 
 import structlog
-from langchain import hub
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import (
     BaseMessage,
 )
-from langchain_core.output_parsers import JsonOutputParser
-from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore[import-untyped]
 from langgraph.checkpoint.base import BaseCheckpointSaver
-from langgraph.checkpoint.memory import InMemorySaver
-from mcp import ClientSession
-from mcp.client.sse import sse_client
 
 from octogen.api.types.search_tool_output import Product
 from octogen.shop_agent.base import ShopAgent
+from octogen.shop_agent.factory import create_agent
 from octogen.shop_agent.utils import (
     expand_ai_recommendations,
 )
@@ -31,10 +26,6 @@ from showcase.schema import (
 )
 
 logger = structlog.get_logger()
-
-# Use a pretrained model
-
-comparison_agent_response_parser = JsonOutputParser(pydantic_object=ComparisonResponse)
 
 
 def process_product_recommendations(
@@ -128,40 +119,20 @@ async def create_comparison_agent(
     model: BaseChatModel,
     checkpointer: Optional[BaseCheckpointSaver] = None,
 ) -> AsyncGenerator[ShopAgent, None]:
-    """Load the stylist agent with tools."""
-    if not checkpointer:
-        checkpointer = InMemorySaver()
+    """Load the comparison agent with tools."""
+    additional_prompt_args = {
+        "product_schema": get_reduced_product_schema(),
+    }
 
-    async with sse_client(url="http://0.0.0.0:8000/sse", timeout=60) as (read, write):
-        async with ClientSession(read, write) as session:
-            # Initialize the connection
-            await session.initialize()
-
-            system_prompt = (
-                hub.pull("comparison_agent")
-                .invoke(
-                    dict(
-                        response_schema=comparison_agent_response_parser.get_format_instructions(),
-                        product_schema=get_reduced_product_schema(),
-                    )
-                )
-                .messages
-            )
-            # Get tools
-            tools = await load_mcp_tools(session)
-
-            # Filter for style_and_tags_search
-            style_tools = [
-                tool for tool in tools if tool.name == "agent_search_products"
-            ]
-            agent = ShopAgent(
-                model=model,
-                tools=style_tools,
-                system_message=system_prompt,
-                response_class=ComparisonResponse,
-                hydrated_response_class=HydratedComparisonResponse,
-                rec_expansion_fn=process_product_recommendations,
-                checkpointer=checkpointer,
-            )
-
-            yield agent
+    async with create_agent(
+        model=model,
+        agent_name="Comparison",
+        response_class=ComparisonResponse,
+        hydrated_response_class=HydratedComparisonResponse,
+        rec_expansion_fn=process_product_recommendations,
+        tool_names=["agent_search_products"],
+        hub_prompt_id="example_comparison_agent",
+        additional_prompt_args=additional_prompt_args,
+        checkpointer=checkpointer,
+    ) as agent:
+        yield agent
