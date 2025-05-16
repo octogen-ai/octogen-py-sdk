@@ -24,7 +24,7 @@ async def create_agent(
     agent_name: str,
     response_class: Type[BaseModel],
     hydrated_response_class: Type[BaseModel],
-    rec_expansion_fn: Callable[[BaseModel, Sequence[BaseMessage]], str],
+    rec_expansion_fn: Callable[[Any, Sequence[BaseMessage]], str],
     tool_names: list[str],
     hub_prompt_id: str,
     additional_prompt_args: Optional[dict[str, Any]] = None,

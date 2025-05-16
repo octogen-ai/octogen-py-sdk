@@ -23,7 +23,7 @@ pip install octogen-sdk-langgraph
 ## Requirements
 
 - Python ≥ 3.12
-- Dependencies: 
+- Dependencies:
   - langchain ≥ 0.3.25
   - langgraph ≥ 0.4.3
   - pydantic ≥ 2.11.4
