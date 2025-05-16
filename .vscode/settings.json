@@ -12,10 +12,5 @@
     ],
     "mypy-type-checker.importStrategy": "fromEnvironment",
     "mypy-type-checker.reportingScope": "workspace",
-    "mypy-type-checker.args": [
-        "--explicit-package-bases",
-        "--config-file",
-        "${workspaceFolder}/pyproject.toml"
-    ],
     "mypy-type-checker.preferDaemon": false,
 }

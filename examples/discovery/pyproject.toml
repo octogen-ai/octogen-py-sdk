@@ -1,7 +1,7 @@
 [project]
 name = "discovery"
 version = "0.1.0"
-description = "Add your description here"
+description = "Discovery agent"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -12,7 +12,7 @@ dependencies = [
     "langchain-openai>=0.3.16",
     "langgraph>=0.4.3",
     "octogen-api>=0.1.0a4",
-    "octogen-py-sdk",
+    "octogen-sdk-langgraph",
     "pydantic>=2.11.4",
     "python-dotenv>=1.1.0",
     "ruff>=0.11.10",
@@ -25,7 +25,7 @@ show_error_codes = true
 no_implicit_optional = true
 warn_return_any = true
 warn_unused_ignores = true
-mypy_path = "."
+mypy_path = ["."]
 
 [tool.uv.sources]
-octogen-py-sdk = { path = "../../", editable = true }
+octogen-sdk-langgraph = { path = "../../", editable = true }
