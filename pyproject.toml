@@ -1,9 +1,14 @@
 [project]
 name = "octogen-sdk-langgraph"
 version = "0.1.0"
-description = "Octogen Python SDK build on langgraph"
+description = "Octogen Python SDK built on langgraph"
 readme = "README.md"
 requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]   
 dependencies = [
     "jsonpatch>=1.33",
     "langchain>=0.3.25",
