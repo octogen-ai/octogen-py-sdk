@@ -19,7 +19,7 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.8
+    rev: v0.11.10
     hooks:
       - id: ruff
         args:
@@ -34,7 +34,7 @@ repos:
           - pyi
         files: '^(src/octogen/shop_agent|examples|tests)/.*\.py$'
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.3
+    rev: 0.7.5
     hooks:
       - id: uv-lock
   - repo: https://github.com/abravalheri/validate-pyproject
