@@ -14,6 +14,43 @@ A Python SDK for building LLM-powered shop agents using LangGraph and LangChain,
 - Integration with Octogen MCP tools for product discovery
 - Streamlined agent creation through factory patterns
 
+## Environment Variables
+
+### Required Variables
+- `OPENAI_API_KEY` - Your OpenAI API key
+- `OCTOGEN_API_KEY` - Your Octogen API key
+- `OCTOGEN_MCP_SERVER_HOST` - Octogen MCP server host URL
+
+### Optional Variables (for LangChain Tracing)
+- `LANGCHAIN_API_KEY` - Your LangChain API key
+- `LANGCHAIN_TRACING_V2` - Enable LangChain tracing (set to "true")
+- `LANGCHAIN_PROJECT` - LangChain project name
+
+### .env File Placement
+For the SDK to properly load your environment variables, you can:
+
+1. **Place a .env file in your project's root directory** - The default behavior is to look for a .env file in the current working directory.
+
+2. **Explicitly specify the path** - When using example servers or creating agents, pass the path to your .env file:
+   ```python
+   from dotenv import find_dotenv
+   from octogen.shop_agent.settings import get_agent_settings
+   
+   # Pass the path to your .env file
+   get_agent_settings(find_dotenv(usecwd=True))
+   ```
+
+3. **Set environment variables directly** - You can also set these variables in your environment before running your application.
+
+### Example Projects
+When running the example projects (stylist, discovery, comparison), place your `.env` file in the specific example's directory. For instance, to run the stylist example:
+
+```
+examples/stylist/.env  # Place your .env file here when running the stylist example
+```
+
+This is because the examples use `find_dotenv(usecwd=True)`, which looks for a `.env` file in the current working directory.
+
 ## Installation
 
 ```bash

@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Callable, Optional, Sequence, Type
 
 import structlog
+from dotenv import find_dotenv
 from langchain import hub
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import BaseMessage
@@ -14,6 +15,7 @@ from mcp.client.sse import sse_client
 from pydantic import BaseModel
 
 from octogen.shop_agent.base import ShopAgent
+from octogen.shop_agent.settings import AgentSettings, get_agent_settings
 
 logger = structlog.get_logger()
 
@@ -28,7 +30,7 @@ async def create_agent(
     tool_names: list[str],
     hub_prompt_id: str,
     additional_prompt_args: Optional[dict[str, Any]] = None,
-    sse_url: str = "http://0.0.0.0:8000/sse",
+    agent_settings: AgentSettings = get_agent_settings(find_dotenv(usecwd=True)),
     checkpointer: Optional[BaseCheckpointSaver] = None,
 ) -> AsyncGenerator[ShopAgent, None]:
     """Generic factory function for creating a shop agent.
@@ -42,7 +44,7 @@ async def create_agent(
         tool_names: List of MCP tool names to use
         hub_prompt_id: LangChain Hub ID for the system prompt
         additional_prompt_args: Additional args to pass to the prompt template
-        sse_url: URL for the SSE connection
+        mcp_settings: MCP settings
         checkpointer: Optional checkpoint saver for the agent
 
     Yields:
@@ -52,7 +54,11 @@ async def create_agent(
         checkpointer = InMemorySaver()
 
     logger.info(f"Creating {agent_name} agent")
-    async with sse_client(url=sse_url, timeout=60) as (read, write):
+    async with sse_client(
+        url=f"{agent_settings.mcp_server_host}/sse",
+        timeout=agent_settings.mcp_server_timeout,
+        headers=agent_settings.mcp_auth_header,
+    ) as (read, write):
         async with ClientSession(read, write) as session:
             # Initialize the connection
             await session.initialize()
