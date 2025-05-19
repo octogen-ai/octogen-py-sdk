@@ -35,7 +35,7 @@ For the SDK to properly load your environment variables, you can:
    ```python
    from dotenv import find_dotenv
    from octogen.shop_agent.settings import get_agent_settings
-   
+
    # Pass the path to your .env file
    get_agent_settings(find_dotenv(usecwd=True))
    ```
