@@ -4,13 +4,13 @@ from showcase.agent import create_discovery_agent
 from showcase.schema import AgentResponse
 
 from octogen.shop_agent.server import AgentServer
-from octogen.shop_agent.settings import get_settings
+from octogen.shop_agent.settings import get_agent_settings
 
 
 def run_server(host: str = "0.0.0.0", port: int = 8004) -> None:
     """Run the discovery agent server."""
     # Initialize settings
-    get_settings(find_dotenv(usecwd=True))
+    get_agent_settings(find_dotenv(usecwd=True))
 
     # Create server
     server = AgentServer(

@@ -4,13 +4,13 @@ from showcase.agent import create_stylist_agent
 from showcase.schema import HydratedStylistAgentResponse
 
 from octogen.shop_agent.server import AgentServer
-from octogen.shop_agent.settings import get_settings
+from octogen.shop_agent.settings import get_agent_settings
 
 
 def run_server(host: str = "0.0.0.0", port: int = 8005) -> None:
     """Run the stylist agent server."""
     # Initialize settings
-    get_settings(find_dotenv(usecwd=True))
+    get_agent_settings(find_dotenv(usecwd=True))
 
     # Create server
     server = AgentServer(
