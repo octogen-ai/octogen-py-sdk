@@ -1,4 +1,4 @@
-# Octogen Python SDK for LangGraph
+# Octogen Python SDK built on LangGraph
 
 [![PyPI version](https://badge.fury.io/py/octogen-sdk-langgraph.svg)](https://badge.fury.io/py/octogen-sdk-langgraph)
 [![Python Version](https://img.shields.io/pypi/pyversions/octogen-sdk-langgraph.svg)](https://pypi.org/project/octogen-sdk-langgraph/)
@@ -49,7 +49,7 @@ async with create_agent(
     response_class=ResponseClass,
     hydrated_response_class=HydratedResponseClass,
     rec_expansion_fn=expand_recommendations,
-    tool_names=["search_products", "get_product_details"],
+    tool_names=["agent_search_products", "enrich_product_image"],
     hub_prompt_id="your/hub/prompt_id",
 ) as agent:
     # Use the agent
