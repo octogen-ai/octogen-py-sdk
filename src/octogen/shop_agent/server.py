@@ -86,6 +86,8 @@ class AgentServer(Generic[ResponseT]):
                     raise HTTPException(
                         status_code=500, detail=f"{self.title} agent not initialized"
                     )
+                logger.info(f"Agent initialized with user_id: {request.user_id}")
+                logger.info(f"Agent initialized with thread_id: {request.thread_id}")
 
                 # Configure the agent
                 config = ShopAgentConfig(
@@ -96,6 +98,7 @@ class AgentServer(Generic[ResponseT]):
 
                 # Process the message with the agent
                 agent_response = await self.agent.run(request.message, config)
+                logger.info(f"agent checkpoints: {self.agent.checkpointer.checkpoints}")
                 try:
                     response = self.response_model.model_validate_json(agent_response)
                 except Exception as e:

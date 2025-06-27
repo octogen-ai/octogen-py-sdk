@@ -1,12 +1,11 @@
 from collections import defaultdict
 from collections.abc import AsyncIterator
 from typing import Dict, List, Tuple
-
-from langgraph.checkpoint.base import Checkpoint, CheckpointMetadata, CheckpointTuple
+import structlog
+from langgraph.checkpoint.base import CheckpointTuple
 from langgraph.checkpoint.memory import InMemorySaver
-from langgraph.runnables import RunnableConfig
 
-
+logger = structlog.get_logger()
 class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
     """
     An in-memory checkpoint saver that extends the base InMemorySaver to support
@@ -14,27 +13,33 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
     conversation messages for a specific user.
     """
 
-    def put(
-        self,
-        config: RunnableConfig,
-        checkpoint: Checkpoint,
-        metadata: CheckpointMetadata,
-    ) -> RunnableConfig:
-        """
-        Saves a checkpoint by appending it to the list for the given thread_id,
-        rather than overwriting.
-        """
-        thread_id = config["configurable"]["thread_id"]
-        self.checkpoints[thread_id].append(
-            CheckpointTuple(
-                config,
-                self.serde.loads(self.serde.dumps(checkpoint)),
-                self.serde.loads(self.serde.dumps(metadata)),
-                None,
-                {},
-            )
-        )
-        return config
+    # def __init__(self):
+    #     """Initialize the checkpoint saver with an empty checkpoints dictionary."""
+    #     super().__init__()
+    #     # Initialize checkpoints as a defaultdict of lists
+    #     self.checkpoints = defaultdict(list)
+
+    # def put(
+    #     self,
+    #     config: RunnableConfig,
+    #     checkpoint: Checkpoint,
+    #     metadata: CheckpointMetadata,
+    # ) -> RunnableConfig:
+    #     """
+    #     Saves a checkpoint by appending it to the list for the given thread_id,
+    #     rather than overwriting.
+    #     """
+    #     thread_id = config["configurable"]["thread_id"]
+    #     self.checkpoints[thread_id].append(
+    #         CheckpointTuple(
+    #             config,
+    #             self.serde.loads(self.serde.dumps(checkpoint)),
+    #             self.serde.loads(self.serde.dumps(metadata)),
+    #             None,
+    #             {},
+    #         )
+    #     )
+    #     return config
 
     async def afind_thread_boundary_checkpoints(
         self, user_id: str
@@ -56,7 +61,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
                 # Filter checkpoints by user_id from the configurable section
                 if checkpoint.config["configurable"].get("user_id") == user_id:
                     threads[thread_id].append(checkpoint)
-
+        logger.info(f"found {len(threads)} threads for user {user_id} in checkpointer")
         # Yield first and last checkpoints for each thread
         for thread_id, checkpoints in threads.items():
             if checkpoints:
@@ -86,6 +91,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
                 if cp.config["configurable"].get("user_id") == user_id
             ]
             user_checkpoints.sort(key=lambda cp: cp.checkpoint["ts"])
+            print(f"Found {len(user_checkpoints)} checkpoints for thread {thread_id}")
             for checkpoint in user_checkpoints:
                 yield checkpoint
 

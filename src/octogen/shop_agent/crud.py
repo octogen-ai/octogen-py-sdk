@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 import structlog
 from langchain_core.messages import AIMessage
@@ -17,11 +17,8 @@ from octogen.shop_agent.schemas import (
 
 logger = structlog.get_logger()
 
-# Singleton instance of the in-memory checkpointer
-checkpointer = ShopAgentInMemoryCheckpointSaver()
 
-
-async def list_threads_for_user(user_id: str) -> List[Thread]:
+async def list_threads_for_user(user_id: str, checkpointer: Optional[ShopAgentInMemoryCheckpointSaver] = None) -> List[Thread]:
     """
     Lists all conversation threads for a given user.
 
@@ -58,10 +55,11 @@ async def list_threads_for_user(user_id: str) -> List[Thread]:
                 title=title,
             )
         )
+    logger.info(f"Found {len(threads)} threads for user {user_id}")
     return threads
 
 
-async def get_chat_history_for_thread(*, user_id: str, thread_id: str) -> ChatHistory:
+async def get_chat_history_for_thread(*, user_id: str, thread_id: str, checkpointer: Optional[ShopAgentInMemoryCheckpointSaver] = None) -> ChatHistory:
     """
     Retrieves the chat history for a specific thread and user.
 
@@ -78,7 +76,7 @@ async def get_chat_history_for_thread(*, user_id: str, thread_id: str) -> ChatHi
         user_id=user_id, thread_id=thread_id
     ):
         thread_checkpoints.append(checkpoint)
-
+    logger.info(f"Found {len(thread_checkpoints)} checkpoints for thread {thread_id}")
     # Process the collected checkpoints to build the chat history
     return get_chat_history_from_checkpoint_tuples(thread_checkpoints)
 
@@ -184,7 +182,7 @@ def get_chat_history_from_checkpoint_tuples(
     )
 
 
-async def delete_thread(user_id: str, thread_id: str) -> int:
+async def delete_thread(user_id: str, thread_id: str, checkpointer: Optional[ShopAgentInMemoryCheckpointSaver] = None) -> int:
     """
     Deletes all checkpoints for a given thread.
 
@@ -197,5 +195,7 @@ async def delete_thread(user_id: str, thread_id: str) -> int:
     """
     # The user_id is not strictly necessary for deletion in this in-memory implementation
     # but is kept for API consistency.
+    if not checkpointer:
+        checkpointer = ShopAgentInMemoryCheckpointSaver()
     deleted_count = await checkpointer.adelete_thread_checkpoints(thread_id)
     return deleted_count

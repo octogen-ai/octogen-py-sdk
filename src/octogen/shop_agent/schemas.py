@@ -1,9 +1,18 @@
 from datetime import datetime
-from typing import List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union, Dict, Any
 
 from pydantic import BaseModel, Field
 
-from octogen.schemas.product_schema import Product
+
+class Product(BaseModel):
+    """Represents a product with basic details."""
+    
+    id: str = Field(..., description="Unique identifier for the product")
+    name: str = Field(..., description="Name of the product")
+    description: Optional[str] = Field(None, description="Description of the product")
+    price: Optional[float] = Field(None, description="Price of the product")
+    image_url: Optional[str] = Field(None, description="URL to the product image")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional product metadata")
 
 
 class Feature(BaseModel):
