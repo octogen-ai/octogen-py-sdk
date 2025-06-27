@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 import structlog
 from langchain_core.messages import AIMessage
@@ -18,12 +18,15 @@ from octogen.shop_agent.schemas import (
 logger = structlog.get_logger()
 
 
-async def list_threads_for_user(user_id: str, checkpointer: Optional[ShopAgentInMemoryCheckpointSaver] = None) -> List[Thread]:
+async def list_threads_for_user(
+    user_id: str, checkpointer: ShopAgentInMemoryCheckpointSaver
+) -> List[Thread]:
     """
     Lists all conversation threads for a given user.
 
     Args:
         user_id: The ID of the user.
+        checkpointer: The checkpoint saver instance.
 
     Returns:
         A list of Thread objects, each representing a conversation thread.
@@ -55,17 +58,20 @@ async def list_threads_for_user(user_id: str, checkpointer: Optional[ShopAgentIn
                 title=title,
             )
         )
-    logger.info(f"Found {len(threads)} threads for user {user_id}")
+    logger.info(f"found {len(threads)} threads for user {user_id}")
     return threads
 
 
-async def get_chat_history_for_thread(*, user_id: str, thread_id: str, checkpointer: Optional[ShopAgentInMemoryCheckpointSaver] = None) -> ChatHistory:
+async def get_chat_history_for_thread(
+    *, user_id: str, thread_id: str, checkpointer: ShopAgentInMemoryCheckpointSaver
+) -> ChatHistory:
     """
     Retrieves the chat history for a specific thread and user.
 
     Args:
         user_id: The ID of the user.
         thread_id: The ID of the thread.
+        checkpointer: The checkpoint saver instance.
 
     Returns:
         A ChatHistory object containing all messages and metadata for the thread.
@@ -76,7 +82,7 @@ async def get_chat_history_for_thread(*, user_id: str, thread_id: str, checkpoin
         user_id=user_id, thread_id=thread_id
     ):
         thread_checkpoints.append(checkpoint)
-    logger.info(f"Found {len(thread_checkpoints)} checkpoints for thread {thread_id}")
+
     # Process the collected checkpoints to build the chat history
     return get_chat_history_from_checkpoint_tuples(thread_checkpoints)
 
@@ -158,6 +164,13 @@ def get_chat_history_from_checkpoint_tuples(
     messages = [msg for msg in messages if msg.content]
 
     if not messages:
+        if not checkpoint_tuples:
+            return ChatHistory(
+                messages=[],
+                thread_id="",
+                created_at=datetime.now(),
+                title="Empty conversation",
+            )
         # Handle empty conversations
         thread_id = checkpoint_tuples[0].config["configurable"]["thread_id"]
         created_at = datetime.fromisoformat(checkpoint_tuples[0].checkpoint["ts"])
@@ -182,20 +195,21 @@ def get_chat_history_from_checkpoint_tuples(
     )
 
 
-async def delete_thread(user_id: str, thread_id: str, checkpointer: Optional[ShopAgentInMemoryCheckpointSaver] = None) -> int:
+async def delete_thread(
+    user_id: str, thread_id: str, checkpointer: ShopAgentInMemoryCheckpointSaver
+) -> int:
     """
     Deletes all checkpoints for a given thread.
 
     Args:
         user_id: The ID of the user (for consistency, not used in this implementation).
         thread_id: The ID of the thread to delete.
+        checkpointer: The checkpoint saver instance.
 
     Returns:
         The number of checkpoints deleted.
     """
     # The user_id is not strictly necessary for deletion in this in-memory implementation
     # but is kept for API consistency.
-    if not checkpointer:
-        checkpointer = ShopAgentInMemoryCheckpointSaver()
     deleted_count = await checkpointer.adelete_thread_checkpoints(thread_id)
     return deleted_count

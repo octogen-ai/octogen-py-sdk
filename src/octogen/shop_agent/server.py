@@ -39,7 +39,6 @@ class AgentServer(Generic[ResponseT]):
         self,
         title: str,
         endpoint_path: str,
-        agent_factory: Callable[..., AsyncContextManager[ShopAgent]],
         response_model: Type[ResponseT],
     ):
         """Initialize a new agent server.
@@ -47,15 +46,22 @@ class AgentServer(Generic[ResponseT]):
         Args:
             title: The title of the FastAPI application
             endpoint_path: The path for the main endpoint
-            agent_factory: Async context manager that creates the agent
             response_model: Pydantic model for response validation
         """
         self.title = title
         self.endpoint_path = endpoint_path
-        self.agent_factory = agent_factory
+        self.agent_factory: Optional[Callable[..., AsyncContextManager[ShopAgent]]] = (
+            None
+        )
         self.response_model = response_model
         self.agent: Optional[ShopAgent] = None
         self.app = self._create_app()
+
+    def set_agent_factory(
+        self, agent_factory: Callable[..., AsyncContextManager[ShopAgent]]
+    ) -> None:
+        """Set the agent factory after the server is initialized."""
+        self.agent_factory = agent_factory
 
     def _create_app(self) -> FastAPI:
         """Create and configure the FastAPI application."""
@@ -98,7 +104,7 @@ class AgentServer(Generic[ResponseT]):
 
                 # Process the message with the agent
                 agent_response = await self.agent.run(request.message, config)
-                logger.info(f"agent checkpoints: {self.agent.checkpointer.checkpoints}")
+                logger.info(f"agent checkpoints: {self.agent.checkpointer.storage}")
                 try:
                     response = self.response_model.model_validate_json(agent_response)
                 except Exception as e:
@@ -120,6 +126,8 @@ class AgentServer(Generic[ResponseT]):
         """Lifespan context manager for FastAPI application lifecycle events."""
         # Startup: initialize the agent
         logger.info(f"Initializing {self.title} agent...")
+        if not self.agent_factory:
+            raise RuntimeError("Agent factory not set.")
         try:
             async with self.agent_factory() as agent:
                 self.agent = agent
