@@ -16,8 +16,6 @@ from octogen.shop_agent.schemas import ChatHistory, Thread
 from octogen.shop_agent.server import AgentServer
 
 
-
-
 def run_server(host: str = "0.0.0.0", port: int = 8004) -> None:
     """Run the feed agent server."""
     # Load environment variables but don't validate MCP settings

@@ -1,11 +1,14 @@
 from collections import defaultdict
 from collections.abc import AsyncIterator
 from typing import Dict, List, Tuple
+
 import structlog
 from langgraph.checkpoint.base import CheckpointTuple
 from langgraph.checkpoint.memory import InMemorySaver
 
 logger = structlog.get_logger()
+
+
 class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
     """
     An in-memory checkpoint saver that extends the base InMemorySaver to support
