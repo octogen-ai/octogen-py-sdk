@@ -41,14 +41,18 @@ async def list_threads_for_user(
         # Extract timestamps and title from the checkpoints
         created_at = datetime.fromisoformat(first_checkpoint.checkpoint["ts"])
         updated_at = datetime.fromisoformat(last_checkpoint.checkpoint["ts"])
-        try:
-            # Attempt to get the title from the first message
-            title = first_checkpoint.checkpoint["channel_values"]["__start__"][
-                "messages"
-            ][0].content
-        except (KeyError, IndexError):
-            # Fallback title if the expected structure is not present
-            title = "Conversation"
+        # Prefer a title stored in the checkpoint's configurable parameters
+        title: str | None = first_checkpoint.config["configurable"].get("title")
+
+        if not title:
+            try:
+                # Attempt to get the title from the first user message
+                title = first_checkpoint.checkpoint["channel_values"]["__start__"][
+                    "messages"
+                ][0].content
+            except (KeyError, IndexError):
+                # Fallback title if the expected structure is not present
+                title = "Conversation"
 
         threads.append(
             Thread(
@@ -210,11 +214,15 @@ def get_chat_history_from_checkpoint_tuples(
     # Build the final chat history object
     thread_id = checkpoint_tuples[0].config["configurable"]["thread_id"]
     created_at = datetime.fromisoformat(checkpoint_tuples[0].checkpoint["ts"])
-    title = (
-        messages[0].content[:50]
-        if messages and isinstance(messages[0].content, str)
-        else "Conversation"
-    )
+    # Retrieve title from first checkpoint config if available, otherwise derive from first message
+    title: str | None = checkpoint_tuples[0].config["configurable"].get("title")
+
+    if not title:
+        title = (
+            messages[0].content[:50]
+            if messages and isinstance(messages[0].content, str)
+            else "Conversation"
+        )
 
     return ChatHistory(
         messages=messages, thread_id=thread_id, created_at=created_at, title=str(title)
