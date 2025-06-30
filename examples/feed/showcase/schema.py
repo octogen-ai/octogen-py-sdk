@@ -20,23 +20,10 @@ class SearchQuery(BaseModel):
     )
 
 
-class AgentResponse(BaseModel):
-    response_type: Literal["search_query", "freeform_question"] = Field(
-        description=RESPONSE_TYPE_DESCRIPTION,
-    )
-    preamble: str = Field(
-        description=PREAMBLE_DESCRIPTION,
-    )
-    search_query: Optional[SearchQuery] = Field(
-        description=SEARCH_QUERY_DESCRIPTION,
-        default=None,
-    )
-
-
 ERROR_DESCRIPTION = "Error message if the response type is error"
 
 
-class HydratedAgentResponse(BaseModel):
+class AgentResponse(BaseModel):
     response_type: Literal["search_query", "freeform_question", "error"] = Field(
         description=RESPONSE_TYPE_DESCRIPTION,
     )

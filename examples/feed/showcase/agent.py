@@ -16,7 +16,6 @@ from octogen.shop_agent.base import ShopAgent
 from octogen.shop_agent.factory import create_agent
 from showcase.schema import (
     AgentResponse,
-    HydratedAgentResponse,
 )
 
 logger = structlog.get_logger()
@@ -27,8 +26,7 @@ def process_agent_response(
 ) -> str:
     """Process the agent response."""
     # No transformation needed, just return the JSON representation
-    hydrated_response = HydratedAgentResponse(**unhydrated_response.model_dump())
-    return hydrated_response.model_dump_json()
+    return unhydrated_response.model_dump_json()
 
 
 @asynccontextmanager
@@ -41,7 +39,7 @@ async def create_feed_agent(
         model=model,
         agent_name="Feed Agent",
         response_class=AgentResponse,
-        hydrated_response_class=HydratedAgentResponse,
+        hydrated_response_class=AgentResponse,
         rec_expansion_fn=process_agent_response,
         tool_names=["enrich_product_image"],
         hub_prompt_id="feed-agent",

@@ -63,9 +63,9 @@ class ChatMessage(BaseModel):
     # Allow content to be either a simple string or any Pydantic BaseModel. This
     # makes the schema flexible for agents that define their own structured
     # response models outside of this base package.
-    content: Union[str, BaseModel] = Field(
+    content: Union[str, Dict[str, Any], BaseModel] = Field(
         ...,
-        description="The content of the message. Can be a plain string or any Pydantic model.",
+        description="The content of the message. Can be a plain string, a dict, or any Pydantic model.",
     )
 
 

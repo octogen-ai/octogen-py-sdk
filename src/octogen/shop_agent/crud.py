@@ -145,7 +145,11 @@ def get_chat_history_from_checkpoint_tuples(
                             ChatMessage(
                                 timestamp=timestamp,
                                 role="assistant",
-                                content=structured_response,
+                                # Convert the BaseModel to a plain dict so FastAPI/Pydantic
+                                # encodes it correctly in the API response.
+                                content=structured_response.model_dump(
+                                    exclude_none=True
+                                ),
                             )
                         )
                     except (ValidationError, json.JSONDecodeError) as e:
@@ -167,10 +171,10 @@ def get_chat_history_from_checkpoint_tuples(
                     # downstream consumers continue to receive the structure they
                     # expect. Otherwise, store the raw string.
                     if response_model_class is HydratedAgentResponse:
-                        wrapped_content: BaseModel = HydratedAgentResponse(
+                        wrapped_content: BaseModel | str | dict = HydratedAgentResponse(
                             response_type="freeform_question",
                             preamble=content,
-                        )
+                        ).model_dump(exclude_none=True)
                     else:
                         wrapped_content = content
 
