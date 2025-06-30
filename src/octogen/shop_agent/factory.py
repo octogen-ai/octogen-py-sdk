@@ -11,7 +11,7 @@ from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore[import-u
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from mcp import ClientSession
-from mcp.client.sse import sse_client
+from mcp.client.streamable_http import streamablehttp_client  # type: ignore
 from pydantic import BaseModel
 
 from octogen.shop_agent.base import ShopAgent
@@ -54,11 +54,11 @@ async def create_agent(
         checkpointer = InMemorySaver()
 
     logger.info(f"Creating {agent_name} agent")
-    async with sse_client(
-        url=f"{agent_settings.mcp_server_host}/sse",
+    async with streamablehttp_client(
+        url=agent_settings.mcp_server_url,
         timeout=agent_settings.mcp_server_timeout,
         headers=agent_settings.mcp_auth_header,
-    ) as (read, write):
+    ) as (read, write, _):
         async with ClientSession(read, write) as session:
             # Initialize the connection
             await session.initialize()

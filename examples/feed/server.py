@@ -4,7 +4,7 @@ from dotenv import find_dotenv, load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Request
 from langchain_openai import ChatOpenAI
 from showcase.agent import create_feed_agent
-from showcase.schema import AgentResponse
+from showcase.schema import AgentResponse, HydratedAgentResponse
 
 from octogen.shop_agent.checkpointer import ShopAgentInMemoryCheckpointSaver
 from octogen.shop_agent.crud import (
@@ -58,7 +58,10 @@ def run_server(host: str = "0.0.0.0", port: int = 8004) -> None:
     ):
         """Get full chat history for a specific thread."""
         return await get_chat_history_for_thread(
-            user_id=user_id, thread_id=thread_id, checkpointer=checkpointer
+            user_id=user_id,
+            thread_id=thread_id,
+            checkpointer=checkpointer,
+            response_model_class=HydratedAgentResponse,
         )
 
     @history_router.delete("/threads/{user_id}/{thread_id}")
