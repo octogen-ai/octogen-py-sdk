@@ -34,10 +34,13 @@ def run_server(host: str = "0.0.0.0", port: int = 8004) -> None:
     server.app.state.checkpointer = ShopAgentInMemoryCheckpointSaver()
 
     # Define the agent factory using the server's checkpointer
-    agent_factory = lambda: create_feed_agent(
-        model=ChatOpenAI(model="gpt-4.1"),
-        checkpointer=server.app.state.checkpointer,
-    )
+    def agent_factory():
+        """Factory function returning a configured feed agent."""
+        return create_feed_agent(
+            model=ChatOpenAI(model="gpt-4.1"),
+            checkpointer=server.app.state.checkpointer,
+        )
+
     server.set_agent_factory(agent_factory)
 
     # Create router for chat history endpoints

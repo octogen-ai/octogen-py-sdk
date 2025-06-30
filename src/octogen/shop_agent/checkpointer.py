@@ -35,8 +35,8 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
         new_versions: ChannelVersions,
     ) -> RunnableConfig:
         """Override to store the full config including user_id."""
-        # Call parent's put method
-        result = super().put(config, checkpoint, metadata, new_versions)
+        # Call parent's put method (store the minimal checkpoint via parent logic)
+        super().put(config, checkpoint, metadata, new_versions)
 
         # Store the full config
         thread_id = config["configurable"]["thread_id"]
