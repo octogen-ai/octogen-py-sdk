@@ -1,18 +1,20 @@
 from datetime import datetime
-from typing import List, Literal, Optional, Union, Dict, Any
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
 
 class Product(BaseModel):
     """Represents a product with basic details."""
-    
+
     id: str = Field(..., description="Unique identifier for the product")
     name: str = Field(..., description="Name of the product")
     description: Optional[str] = Field(None, description="Description of the product")
     price: Optional[float] = Field(None, description="Price of the product")
     image_url: Optional[str] = Field(None, description="URL to the product image")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional product metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional product metadata"
+    )
 
 
 class Feature(BaseModel):
@@ -58,8 +60,12 @@ class ChatMessage(BaseModel):
     role: Literal["user", "assistant"] = Field(
         ..., description="The role of the message sender."
     )
-    content: Union[str, HydratedAgentResponse] = Field(
-        ..., description="The content of the message."
+    # Allow content to be either a simple string or any Pydantic BaseModel. This
+    # makes the schema flexible for agents that define their own structured
+    # response models outside of this base package.
+    content: Union[str, BaseModel] = Field(
+        ...,
+        description="The content of the message. Can be a plain string or any Pydantic model.",
     )
 
 

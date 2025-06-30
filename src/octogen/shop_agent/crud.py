@@ -1,17 +1,17 @@
 import json
 from datetime import datetime
-from typing import List
+from typing import List, Type
 
 import structlog
 from langchain_core.messages import AIMessage
 from langgraph.checkpoint.base import CheckpointTuple
+from pydantic import BaseModel, ValidationError
 
 from octogen.shop_agent.checkpointer import ShopAgentInMemoryCheckpointSaver
 from octogen.shop_agent.schemas import (
     ChatHistory,
     ChatMessage,
     HydratedAgentResponse,
-    ProductRecommendation,
     Thread,
 )
 
@@ -63,7 +63,11 @@ async def list_threads_for_user(
 
 
 async def get_chat_history_for_thread(
-    *, user_id: str, thread_id: str, checkpointer: ShopAgentInMemoryCheckpointSaver
+    *,
+    user_id: str,
+    thread_id: str,
+    checkpointer: ShopAgentInMemoryCheckpointSaver,
+    response_model_class: Type[BaseModel] = HydratedAgentResponse,
 ) -> ChatHistory:
     """
     Retrieves the chat history for a specific thread and user.
@@ -72,6 +76,7 @@ async def get_chat_history_for_thread(
         user_id: The ID of the user.
         thread_id: The ID of the thread.
         checkpointer: The checkpoint saver instance.
+        response_model_class: The response model class to use for parsing JSON content.
 
     Returns:
         A ChatHistory object containing all messages and metadata for the thread.
@@ -84,17 +89,23 @@ async def get_chat_history_for_thread(
         thread_checkpoints.append(checkpoint)
 
     # Process the collected checkpoints to build the chat history
-    return get_chat_history_from_checkpoint_tuples(thread_checkpoints)
+    return get_chat_history_from_checkpoint_tuples(
+        checkpoint_tuples=thread_checkpoints,
+        response_model_class=response_model_class,
+    )
 
 
 def get_chat_history_from_checkpoint_tuples(
     checkpoint_tuples: List[CheckpointTuple],
+    *,
+    response_model_class: Type[BaseModel] = HydratedAgentResponse,
 ) -> ChatHistory:
     """
     Constructs a ChatHistory object from a list of checkpoint tuples.
 
     Args:
         checkpoint_tuples: A list of checkpoint tuples from a conversation.
+        response_model_class: The response model class to use for parsing JSON content.
 
     Returns:
         A ChatHistory object representing the conversation.
@@ -128,16 +139,8 @@ def get_chat_history_from_checkpoint_tuples(
                     and "response_type" in content
                 ):
                     try:
-                        json_content = json.loads(content)
-                        structured_response = HydratedAgentResponse(
-                            **json_content,
-                            product_recommendations=[
-                                ProductRecommendation(**rec)
-                                for rec in json_content.get(
-                                    "product_recommendations", []
-                                )
-                            ],
-                        )
+                        # Attempt to parse the JSON into the provided response model.
+                        structured_response = response_model_class.parse_raw(content)
                         messages.append(
                             ChatMessage(
                                 timestamp=timestamp,
@@ -145,18 +148,37 @@ def get_chat_history_from_checkpoint_tuples(
                                 content=structured_response,
                             )
                         )
-                    except json.JSONDecodeError:
-                        # Fallback for malformed JSON
-                        logger.debug(f"Failed to parse content as JSON: {content}")
-                # Handle simple string content
+                    except (ValidationError, json.JSONDecodeError) as e:
+                        # If parsing fails, log and fall back to raw string content.
+                        logger.debug(
+                            f"Failed to parse content as {response_model_class.__name__}: {e}"
+                        )
+                        messages.append(
+                            ChatMessage(
+                                timestamp=timestamp,
+                                role="assistant",
+                                content=content,
+                            )
+                        )
+                # Handle simple string content or fallback when JSON parsing fails.
                 elif isinstance(content, str):
+                    # For backward compatibility, if the default response model is
+                    # being used, wrap plain strings in a HydratedAgentResponse so
+                    # downstream consumers continue to receive the structure they
+                    # expect. Otherwise, store the raw string.
+                    if response_model_class is HydratedAgentResponse:
+                        wrapped_content: BaseModel = HydratedAgentResponse(
+                            response_type="freeform_question",
+                            preamble=content,
+                        )
+                    else:
+                        wrapped_content = content
+
                     messages.append(
                         ChatMessage(
                             timestamp=timestamp,
                             role="assistant",
-                            content=HydratedAgentResponse(
-                                response_type="freeform_question", preamble=content
-                            ),
+                            content=wrapped_content,
                         )
                     )
 
