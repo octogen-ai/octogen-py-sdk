@@ -14,6 +14,7 @@ DEFAULT_MCP_SERVER_TIMEOUT = 3600
 class AgentSettings(BaseSettings):
     mcp_api_key: str
     mcp_server_host: str
+    mcp_server_url: str
     mcp_auth_header: dict[str, str]
     mcp_server_timeout: int = DEFAULT_MCP_SERVER_TIMEOUT
 
@@ -41,9 +42,13 @@ def get_agent_settings(path: Optional[str] = None) -> AgentSettings:
     mcp_server_host = os.getenv("OCTOGEN_MCP_SERVER_HOST")
     if not mcp_server_host:
         raise ValueError("OCTOGEN_MCP_SERVER_HOST must be set in the environment.")
+    # Assume streamable HTTP endpoint at /stream
+    mcp_server_url = f"{mcp_server_host.rstrip('/')}/mcp"
+
     return AgentSettings(
         mcp_api_key=mcp_api_key,
         mcp_server_host=mcp_server_host,
+        mcp_server_url=mcp_server_url,
         mcp_auth_header={"x-api-key": mcp_api_key},
         mcp_server_timeout=DEFAULT_MCP_SERVER_TIMEOUT,
     )

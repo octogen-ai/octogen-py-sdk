@@ -31,6 +31,9 @@ class ShopAgentConfig(BaseModel):
     user_id: str = Field(default="")
     thread_id: str = Field(default="")
     run_id: str = Field(default="")
+    title: str = Field(
+        default="", description="Title summarizing the conversation thread."
+    )
 
 
 logger = structlog.get_logger(__name__)

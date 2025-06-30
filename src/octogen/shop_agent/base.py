@@ -30,7 +30,7 @@ from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, StateGraph
-from langgraph.graph.graph import CompiledGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt.tool_node import ToolNode
 from pydantic import BaseModel
 
@@ -148,6 +148,7 @@ class ShopAgent:
         self.system_message = system_message
         self.response_class = response_class
         self.rec_expansion_fn = rec_expansion_fn
+        logger.info(f"checkpointer: {checkpointer}")
         self.checkpointer = checkpointer or InMemorySaver()
         self.agent_executor = self.compile_agent_graph()
         self.hydrated_response_class = hydrated_response_class
@@ -157,7 +158,7 @@ class ShopAgent:
             "rec_expansion_fn must take exactly 2 arguments"
         )
 
-    def compile_agent_graph(self) -> CompiledGraph:
+    def compile_agent_graph(self) -> CompiledStateGraph:
         """Compile the agent graph."""
         workflow = StateGraph(ShopAgentState)
 

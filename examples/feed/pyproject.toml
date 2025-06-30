@@ -1,0 +1,31 @@
+[project]
+name = "discovery"
+version = "0.1.0"
+description = "Discovery agent"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi-cli>=0.0.7",
+    "fastapi[standard]>=0.115.12",
+    "langchain>=0.3.25",
+    "langchain-mcp-adapters>=0.0.11",
+    "langchain-openai>=0.3.16",
+    "langgraph>=0.4.3",
+    "octogen-api==0.1.0a7",
+    "octogen-sdk-langgraph",
+    "pydantic>=2.11.4",
+    "python-dotenv>=1.1.0",
+    "ruff>=0.11.10",
+    "uvicorn>=0.34.2",
+]
+
+[tool.mypy]
+disallow_untyped_defs = true
+show_error_codes = true
+no_implicit_optional = true
+warn_return_any = true
+warn_unused_ignores = true
+mypy_path = ["."]
+
+[tool.uv.sources]
+octogen-sdk-langgraph = { path = "../../", editable = true }
