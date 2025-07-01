@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import AsyncIterator
-from typing import Dict, Optional, Tuple
+from typing import Any, DefaultDict, Dict, List, Optional, Tuple
 
 import structlog
 from langchain_core.runnables import RunnableConfig
@@ -22,7 +22,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
     conversation messages for a specific user.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         # Store full configs separately
         self.configs: Dict[Tuple[str, str, str], RunnableConfig] = {}
@@ -84,7 +84,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
             An iterator of tuples, each containing the thread_id, the first checkpoint,
             and the last checkpoint of a thread.
         """
-        user_threads: Dict[str, list[CheckpointTuple]] = defaultdict(list)
+        user_threads: DefaultDict[str, List[CheckpointTuple]] = defaultdict(list)
 
         logger.info(f"Looking for threads for user_id: {user_id}")
         logger.info(f"Storage contains {len(self.storage)} threads")
@@ -137,7 +137,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
         if thread_id not in self.storage:
             return
 
-        user_checkpoints: list[CheckpointTuple] = []
+        user_checkpoints: List[CheckpointTuple] = []
         for checkpoint_ns, checkpoints in self.storage[thread_id].items():
             for checkpoint_id in checkpoints:
                 config: RunnableConfig = {

@@ -2,8 +2,10 @@ import traceback
 import uuid
 from contextlib import asynccontextmanager
 from typing import (
+    Any,
     AsyncContextManager,
     AsyncGenerator,
+    AsyncIterator,
     Callable,
     Generic,
     Optional,
@@ -155,6 +157,11 @@ class AgentServer(Generic[ResponseT]):
         uvicorn.run(self.app, host=host, port=port)
 
     # Helper -------------------------------------------------------------
+    
+    async def _async_empty_iterator(self, x: Any) -> AsyncIterator[Any]:
+        """Async iterator that yields nothing - used as fallback."""
+        return
+        yield  # This line is unreachable, but needed for mypy to understand this is a generator
 
     async def _get_or_generate_title(self, request: ChatRequest) -> str:
         """Return existing title from checkpoints or produce a new one via LLM."""
@@ -169,13 +176,13 @@ class AgentServer(Generic[ResponseT]):
                 ) in getattr(
                     self.agent.checkpointer,
                     "afind_thread_boundary_checkpoints",
-                    lambda x: iter(()),
+                    self._async_empty_iterator,
                 )(request.user_id or ""):
                     if thread_id == request.thread_id:
                         cfg = first_cp.config["configurable"]
                         existing_title = cfg.get("title")
                         if existing_title:
-                            return existing_title
+                            return str(existing_title)
             except Exception as e:
                 logger.debug(f"Error fetching existing title: {e}")
 
@@ -188,9 +195,8 @@ class AgentServer(Generic[ResponseT]):
                 f"Message:\n{request.message}\n\nTitle:"
             )
             response = await model.ainvoke(prompt)
-            title: str = (
-                response.content if hasattr(response, "content") else str(response)
-            )
+            title_content = response.content if hasattr(response, "content") else str(response)
+            title = str(title_content) if title_content is not None else str(response)
             return title.strip().strip('"')
         except Exception as e:
             logger.warning(f"Failed to generate title with LLM: {e}")
