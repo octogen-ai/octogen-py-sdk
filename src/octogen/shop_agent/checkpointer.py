@@ -84,7 +84,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
             An iterator of tuples, each containing the thread_id, the first checkpoint,
             and the last checkpoint of a thread.
         """
-        user_threads: DefaultDict[str, List[CheckpointTuple]] = defaultdict(list)
+        user_threads: DefaultDict[str, List[CheckpointTuple]] = defaultdict(lambda: [])
 
         logger.info(f"Looking for threads for user_id: {user_id}")
         logger.info(f"Storage contains {len(self.storage)} threads")
@@ -116,6 +116,8 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
                             logger.info("    User ID mismatch")
 
         logger.info(f"Found {len(user_threads)} threads for user {user_id}")
+        thread_id: str
+        checkpoints: List[CheckpointTuple]
         for thread_id, checkpoints in user_threads.items():
             if checkpoints:
                 checkpoints.sort(key=lambda cp: cp.checkpoint["ts"])
