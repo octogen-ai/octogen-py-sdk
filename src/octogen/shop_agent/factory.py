@@ -7,7 +7,7 @@ from langchain import hub
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import BaseMessage
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_mcp_adapters.tools import load_mcp_tools  # type: ignore[import-untyped]
+from langchain_mcp_adapters.tools import load_mcp_tools
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from mcp import ClientSession

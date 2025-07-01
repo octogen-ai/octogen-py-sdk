@@ -22,7 +22,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
     conversation messages for a specific user.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # Store full configs separately
         self.configs: Dict[Tuple[str, str, str], RunnableConfig] = {}
@@ -84,7 +84,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
             An iterator of tuples, each containing the thread_id, the first checkpoint,
             and the last checkpoint of a thread.
         """
-        user_threads: defaultdict[str, list[CheckpointTuple]] = defaultdict(list)
+        user_threads: Dict[str, list[CheckpointTuple]] = defaultdict(list)
 
         logger.info(f"Looking for threads for user_id: {user_id}")
         logger.info(f"Storage contains {len(self.storage)} threads")
@@ -96,7 +96,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
                     f"  Namespace: {checkpoint_ns}, checkpoints: {len(checkpoints)}"
                 )
                 for checkpoint_id in checkpoints:
-                    config = {
+                    config: RunnableConfig = {
                         "configurable": {
                             "thread_id": thread_id,
                             "checkpoint_ns": checkpoint_ns,
@@ -140,7 +140,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
         user_checkpoints: list[CheckpointTuple] = []
         for checkpoint_ns, checkpoints in self.storage[thread_id].items():
             for checkpoint_id in checkpoints:
-                config = {
+                config: RunnableConfig = {
                     "configurable": {
                         "thread_id": thread_id,
                         "checkpoint_ns": checkpoint_ns,
