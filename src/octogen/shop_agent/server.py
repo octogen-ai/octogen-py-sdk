@@ -157,7 +157,7 @@ class AgentServer(Generic[ResponseT]):
         uvicorn.run(self.app, host=host, port=port)
 
     # Helper -------------------------------------------------------------
-    
+
     async def _async_empty_iterator(self, x: Any) -> AsyncIterator[Any]:
         """Async iterator that yields nothing - used as fallback."""
         return
@@ -195,7 +195,9 @@ class AgentServer(Generic[ResponseT]):
                 f"Message:\n{request.message}\n\nTitle:"
             )
             response = await model.ainvoke(prompt)
-            title_content = response.content if hasattr(response, "content") else str(response)
+            title_content = (
+                response.content if hasattr(response, "content") else str(response)
+            )
             title = str(title_content) if title_content is not None else str(response)
             return title.strip().strip('"')
         except Exception as e:
