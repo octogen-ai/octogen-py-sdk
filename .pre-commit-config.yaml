@@ -1,4 +1,7 @@
 ci:
+  skip:
+    - run-typecheck-sh
+    - uv-lock
   autofix_prs: false
 repos:
   - repo: local

@@ -51,13 +51,5 @@ extend-select = ["I"]
 known-first-party = ["octogen"]
 
 [[tool.mypy.overrides]]
-module = [
-    "uvicorn",
-    "fastapi",
-    "fastapi.middleware.cors",
-    "langchain_openai",
-    "langchain_mcp_adapters.tools",
-    "mcp",
-    "mcp.client.streamable_http"
-]
+module = []
 ignore_missing_imports = true
