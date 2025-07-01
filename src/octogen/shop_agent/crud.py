@@ -179,7 +179,7 @@ def get_chat_history_from_checkpoint_tuples(
                             response_type="freeform_question",
                             preamble=content,
                             follow_up_question=None,
-                            error=None
+                            error=None,
                         ).model_dump(exclude_none=True)
                     else:
                         wrapped_content = content

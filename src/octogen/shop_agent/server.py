@@ -116,7 +116,7 @@ class AgentServer(Generic[ResponseT]):
 
                 # Process the message with the agent
                 agent_response = await self.agent.run(request.message, config)
-                if hasattr(self.agent.checkpointer, 'storage'):
+                if hasattr(self.agent.checkpointer, "storage"):
                     logger.info(f"agent checkpoints: {self.agent.checkpointer.storage}")
                 try:
                     response = self.response_model.model_validate_json(agent_response)
@@ -166,9 +166,11 @@ class AgentServer(Generic[ResponseT]):
                     thread_id,
                     first_cp,
                     _last_cp,
-                ) in getattr(self.agent.checkpointer, 'afind_thread_boundary_checkpoints', lambda x: iter(()))(
-                    request.user_id or ""
-                ):
+                ) in getattr(
+                    self.agent.checkpointer,
+                    "afind_thread_boundary_checkpoints",
+                    lambda x: iter(()),
+                )(request.user_id or ""):
                     if thread_id == request.thread_id:
                         cfg = first_cp.config["configurable"]
                         existing_title = cfg.get("title")
@@ -186,7 +188,9 @@ class AgentServer(Generic[ResponseT]):
                 f"Message:\n{request.message}\n\nTitle:"
             )
             response = await model.ainvoke(prompt)
-            title: str = response.content if hasattr(response, 'content') else str(response)
+            title: str = (
+                response.content if hasattr(response, "content") else str(response)
+            )
             return title.strip().strip('"')
         except Exception as e:
             logger.warning(f"Failed to generate title with LLM: {e}")
