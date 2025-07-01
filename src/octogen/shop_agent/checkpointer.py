@@ -91,11 +91,11 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
 
         for thread_id, namespaces in self.storage.items():
             logger.info(f"Checking thread_id: {thread_id}")
-            for checkpoint_ns, checkpoints in namespaces.items():
+            for checkpoint_ns, checkpoint_ids in namespaces.items():
                 logger.info(
-                    f"  Namespace: {checkpoint_ns}, checkpoints: {len(checkpoints)}"
+                    f"  Namespace: {checkpoint_ns}, checkpoints: {len(checkpoint_ids)}"
                 )
-                for checkpoint_id in checkpoints:
+                for checkpoint_id in checkpoint_ids:
                     config: RunnableConfig = {
                         "configurable": {
                             "thread_id": thread_id,
@@ -116,8 +116,6 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
                             logger.info("    User ID mismatch")
 
         logger.info(f"Found {len(user_threads)} threads for user {user_id}")
-        thread_id: str
-        checkpoints: List[CheckpointTuple]
         for thread_id, checkpoints in user_threads.items():
             if checkpoints:
                 checkpoints.sort(key=lambda cp: cp.checkpoint["ts"])
@@ -140,8 +138,8 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
             return
 
         user_checkpoints: List[CheckpointTuple] = []
-        for checkpoint_ns, checkpoints in self.storage[thread_id].items():
-            for checkpoint_id in checkpoints:
+        for checkpoint_ns, checkpoint_ids in self.storage[thread_id].items():
+            for checkpoint_id in checkpoint_ids:
                 config: RunnableConfig = {
                     "configurable": {
                         "thread_id": thread_id,
