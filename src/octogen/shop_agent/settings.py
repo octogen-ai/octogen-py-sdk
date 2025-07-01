@@ -1,9 +1,8 @@
 import os
 from functools import lru_cache
-from typing import Optional
 
 import structlog
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from pydantic_settings import BaseSettings
 
 logger = structlog.get_logger(__name__)
@@ -20,11 +19,12 @@ class AgentSettings(BaseSettings):
 
 
 @lru_cache
-def get_agent_settings(path: Optional[str] = None) -> AgentSettings:
-    if path:
-        load_dotenv(path)
+def get_agent_settings() -> AgentSettings:
+    dotenv_path = os.getenv("OCTOGEN_DOTENV_PATH")
+    if dotenv_path:
+        load_dotenv(dotenv_path)
     else:
-        load_dotenv()
+        load_dotenv(find_dotenv(usecwd=True))
     if not (
         os.getenv("LANGCHAIN_API_KEY")
         and os.getenv("LANGCHAIN_TRACING_V2")

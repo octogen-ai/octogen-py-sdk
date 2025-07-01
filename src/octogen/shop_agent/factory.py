@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Callable, Optional, Sequence, Type
 
 import structlog
-from dotenv import find_dotenv
 from langchain import hub
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import BaseMessage
@@ -30,7 +29,7 @@ async def create_agent(
     tool_names: list[str],
     hub_prompt_id: str,
     additional_prompt_args: Optional[dict[str, Any]] = None,
-    agent_settings: AgentSettings = get_agent_settings(find_dotenv(usecwd=True)),
+    agent_settings: AgentSettings = get_agent_settings(),
     checkpointer: Optional[BaseCheckpointSaver] = None,
 ) -> AsyncGenerator[ShopAgent, None]:
     """Generic factory function for creating a shop agent.
