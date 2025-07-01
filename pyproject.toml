@@ -49,7 +49,3 @@ extend-select = ["I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["octogen"]
-
-[[tool.mypy.overrides]]
-module = []
-ignore_missing_imports = true
