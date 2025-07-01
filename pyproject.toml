@@ -10,16 +10,21 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "fastapi>=0.115.14",
     "jsonpatch>=1.33",
     "langchain>=0.3.25",
+    "langchain-mcp-adapters>=0.1.8",
+    "langchain-openai>=0.3.27",
+    "langchain-openapi>=0.1.1",
     "langgraph>=0.4.3",
-    "mypy>=1.15.0",
+    "mcp>=1.10.1",
     "octogen-api>=0.1.0a8",
     "pydantic>=2.11.4",
     "pydantic-settings>=2.9.1",
     "python-dotenv>=1.1.0",
     "ruff>=0.11.10",
     "structlog>=25.3.0",
+    "uvicorn>=0.35.0",
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
@@ -49,3 +54,8 @@ extend-select = ["I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["octogen"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.16.1",
+]

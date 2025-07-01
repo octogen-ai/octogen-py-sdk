@@ -1,0 +1,35 @@
+name: Lint and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  schedule:
+    - cron: "0 14 * * *"
+
+jobs:
+  typecheck-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: 0.7.17
+          enable-cache: true
+          cache-local-path: "/tmp/.uv-cache"
+          cache-dependency-glob: "uv.lock"
+      - name: Set up python
+        run: uv python install
+      - name: Run Typechecking
+        run: |
+          chmod +x ./tests/typecheck.sh
+          ./tests/typecheck.sh

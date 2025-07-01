@@ -2,8 +2,10 @@ import traceback
 import uuid
 from contextlib import asynccontextmanager
 from typing import (
+    Any,
     AsyncContextManager,
     AsyncGenerator,
+    AsyncIterator,
     Callable,
     Generic,
     Optional,
@@ -39,7 +41,7 @@ class AgentServer(Generic[ResponseT]):
     def __init__(
         self,
         title: str,
-        endpoint_path: str,
+        endpoint_prefix: str,
         response_model: Type[ResponseT],
     ):
         """Initialize a new agent server.
@@ -50,7 +52,7 @@ class AgentServer(Generic[ResponseT]):
             response_model: Pydantic model for response validation
         """
         self.title = title
-        self.endpoint_path = endpoint_path
+        self.endpoint_prefix = endpoint_prefix
         self.agent_factory: Optional[Callable[..., AsyncContextManager[ShopAgent]]] = (
             None
         )
@@ -66,7 +68,12 @@ class AgentServer(Generic[ResponseT]):
 
     def _create_app(self) -> FastAPI:
         """Create and configure the FastAPI application."""
-        app = FastAPI(title=self.title, lifespan=self._lifespan)
+        app = FastAPI(
+            title=self.title,
+            lifespan=self._lifespan,
+            openapi_url=f"/{self.endpoint_prefix}/openapi.json",
+            docs_url=f"/{self.endpoint_prefix}/docs",
+        )
 
         # Add CORS middleware
         app.add_middleware(
@@ -79,7 +86,7 @@ class AgentServer(Generic[ResponseT]):
 
         # Add the main endpoint
         @app.post(
-            f"/{self.endpoint_path}",
+            f"/{self.endpoint_prefix}/chat",
             response_model=self.response_model,
             operation_id=f"run{self.title.replace(' ', '')}",
         )
@@ -111,7 +118,8 @@ class AgentServer(Generic[ResponseT]):
 
                 # Process the message with the agent
                 agent_response = await self.agent.run(request.message, config)
-                logger.info(f"agent checkpoints: {self.agent.checkpointer.storage}")
+                if hasattr(self.agent.checkpointer, "storage"):
+                    logger.info(f"agent checkpoints: {self.agent.checkpointer.storage}")
                 try:
                     response = self.response_model.model_validate_json(agent_response)
                 except Exception as e:
@@ -150,7 +158,12 @@ class AgentServer(Generic[ResponseT]):
 
     # Helper -------------------------------------------------------------
 
-    async def _get_or_generate_title(self, request: "ChatRequest") -> str:  # type: ignore[name-defined]
+    async def _async_empty_iterator(self, x: Any) -> AsyncIterator[Any]:
+        """Async iterator that yields nothing - used as fallback."""
+        return
+        yield  # This line is unreachable, but needed for mypy to understand this is a generator
+
+    async def _get_or_generate_title(self, request: ChatRequest) -> str:
         """Return existing title from checkpoints or produce a new one via LLM."""
 
         # If we already have an agent/checkpointer
@@ -160,14 +173,16 @@ class AgentServer(Generic[ResponseT]):
                     thread_id,
                     first_cp,
                     _last_cp,
-                ) in self.agent.checkpointer.afind_thread_boundary_checkpoints(
-                    request.user_id or ""
-                ):
+                ) in getattr(
+                    self.agent.checkpointer,
+                    "afind_thread_boundary_checkpoints",
+                    self._async_empty_iterator,
+                )(request.user_id or ""):
                     if thread_id == request.thread_id:
                         cfg = first_cp.config["configurable"]
                         existing_title = cfg.get("title")
                         if existing_title:
-                            return existing_title
+                            return str(existing_title)
             except Exception as e:
                 logger.debug(f"Error fetching existing title: {e}")
 
@@ -179,7 +194,11 @@ class AgentServer(Generic[ResponseT]):
                 "Summarise the following user message into a concise conversation title of at most 6 words.\n\n"
                 f"Message:\n{request.message}\n\nTitle:"
             )
-            title: str = await model.apredict(prompt)  # type: ignore[attr-defined]
+            response = await model.ainvoke(prompt)
+            title_content = (
+                response.content if hasattr(response, "content") else str(response)
+            )
+            title = str(title_content) if title_content is not None else str(response)
             return title.strip().strip('"')
         except Exception as e:
             logger.warning(f"Failed to generate title with LLM: {e}")

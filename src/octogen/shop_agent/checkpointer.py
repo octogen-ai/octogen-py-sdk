@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import AsyncIterator
-from typing import Dict, Optional, Tuple
+from typing import Any, DefaultDict, Dict, List, Optional, Tuple
 
 import structlog
 from langchain_core.runnables import RunnableConfig
@@ -22,7 +22,7 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
     conversation messages for a specific user.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         # Store full configs separately
         self.configs: Dict[Tuple[str, str, str], RunnableConfig] = {}
@@ -84,19 +84,19 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
             An iterator of tuples, each containing the thread_id, the first checkpoint,
             and the last checkpoint of a thread.
         """
-        user_threads: defaultdict[str, list[CheckpointTuple]] = defaultdict(list)
+        user_threads: DefaultDict[str, List[CheckpointTuple]] = defaultdict(lambda: [])
 
         logger.info(f"Looking for threads for user_id: {user_id}")
         logger.info(f"Storage contains {len(self.storage)} threads")
 
         for thread_id, namespaces in self.storage.items():
             logger.info(f"Checking thread_id: {thread_id}")
-            for checkpoint_ns, checkpoints in namespaces.items():
+            for checkpoint_ns, checkpoint_ids in namespaces.items():
                 logger.info(
-                    f"  Namespace: {checkpoint_ns}, checkpoints: {len(checkpoints)}"
+                    f"  Namespace: {checkpoint_ns}, checkpoints: {len(checkpoint_ids)}"
                 )
-                for checkpoint_id in checkpoints:
-                    config = {
+                for checkpoint_id in checkpoint_ids:
+                    config: RunnableConfig = {
                         "configurable": {
                             "thread_id": thread_id,
                             "checkpoint_ns": checkpoint_ns,
@@ -137,10 +137,10 @@ class ShopAgentInMemoryCheckpointSaver(InMemorySaver):
         if thread_id not in self.storage:
             return
 
-        user_checkpoints: list[CheckpointTuple] = []
-        for checkpoint_ns, checkpoints in self.storage[thread_id].items():
-            for checkpoint_id in checkpoints:
-                config = {
+        user_checkpoints: List[CheckpointTuple] = []
+        for checkpoint_ns, checkpoint_ids in self.storage[thread_id].items():
+            for checkpoint_id in checkpoint_ids:
+                config: RunnableConfig = {
                     "configurable": {
                         "thread_id": thread_id,
                         "checkpoint_ns": checkpoint_ns,

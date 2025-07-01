@@ -679,7 +679,7 @@ wheels = [
 
 [[package]]
 name = "octogen-api"
-version = "0.1.0a7"
+version = "0.1.0a8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -689,9 +689,9 @@ dependencies = [
     { name = "sniffio" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0d/f2/9b84594830aa223b29219114b87bac054598f551184120e7c0be58796ac2/octogen_api-0.1.0a7.tar.gz", hash = "sha256:6a98c5b932189275629d8c1f5d55bf8e3c7228ef37efa5c934a334ebefc8f244", size = 100124, upload-time = "2025-06-27T17:42:27.972Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/d6/7a99c3a2f6e8c59e8712ce6bdea266e0c57da80cb6665a69907f3ec7ba9d/octogen_api-0.1.0a8.tar.gz", hash = "sha256:78bec63dad7aaf6d2034c6b4f0927cad2d0bb7e3b050975a5e708bfe2958d9ab", size = 100088, upload-time = "2025-06-30T23:26:19.079Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/1d/22f18b684f98fc7625f37fd60801820f197c37f03806aa3506a726825b15/octogen_api-0.1.0a7-py3-none-any.whl", hash = "sha256:a1221d00aa8372a27c257890a945f858dd156f5a851bf76d798058fa9efd8e85", size = 84804, upload-time = "2025-06-27T17:42:26.662Z" },
+    { url = "https://files.pythonhosted.org/packages/89/ac/b1aeac56dcfb469e7010b4be028a861a44354b5d8865cabc0359472ac4cd/octogen_api-0.1.0a8-py3-none-any.whl", hash = "sha256:756f6be11536a36948b368c3719dc37335bd17062843ae6387b2c2cafa726dc2", size = 84567, upload-time = "2025-06-30T23:26:17.806Z" },
 ]
 
 [[package]]
@@ -717,7 +717,7 @@ requires-dist = [
     { name = "langchain", specifier = ">=0.3.25" },
     { name = "langgraph", specifier = ">=0.4.3" },
     { name = "mypy", specifier = ">=1.15.0" },
-    { name = "octogen-api", specifier = "==0.1.0a7" },
+    { name = "octogen-api", specifier = ">=0.1.0a8" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
