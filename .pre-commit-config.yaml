@@ -12,14 +12,14 @@ repos:
         language: system
         types: [python]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.1
+    rev: v0.16.5
     hooks:
       - id: ruff
         args:
@@ -34,11 +34,11 @@ repos:
           - pyi
         files: '^(src/octogen/shop_agent|examples|tests)/.*\.py$'
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.17
+    rev: 0.12.7
     hooks:
       - id: uv-lock
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.24.1
+    rev: '0.26'
     hooks:
       - id: validate-pyproject
         files: "^pyproject\\.toml$"
